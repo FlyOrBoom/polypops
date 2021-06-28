@@ -7,107 +7,107 @@
 	<style>
 body,
 html {
-    margin: 0;
-    width: 100%;
-    height: 100%;
+	margin: 0;
+	width: 100%;
+	height: 100%;
 }
 html {
-    font-size: 16px;
+	font-size: 16px;
 }
 body {
-    font-family: Helvetica, Roboto, Arial, sans-serif;
-    background: #888;
-    background-image: url('https://w.wiki/3Z9A');
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    padding: 1vmin;
-    flex-direction: column;
+	font-family: Helvetica, Roboto, Arial, sans-serif;
+	background: #888;
+	background-image: url('https://w.wiki/3Z9A');
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	padding: 1vmin;
+	flex-direction: column;
 }
 body,
 body * {
-    box-sizing: border-box;
-    transition: opacity 300ms;
+	box-sizing: border-box;
+	transition: opacity 300ms;
 }
 main {
-    display: grid;
-    grid-gap: 0.4rem;
-    width: 100%;
-    height: 0;
-    flex-shrink: 1;
-    flex-basis: 100%;
-    margin: 0 auto 1vmin;
+	display: grid;
+	grid-gap: 0.4rem;
+	width: 100%;
+	height: 0;
+	flex-shrink: 1;
+	flex-basis: 100%;
+	margin: 0 auto 1vmin;
 }
 .card,
 .setting {
-    backdrop-filter: blur(1rem);
-    border-radius: 0.4rem;
-    padding: 0.4rem;
+	backdrop-filter: blur(1rem);
+	border-radius: 0.4rem;
+	padding: 0.4rem;
 }
 form {
-    color: white;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.4rem;
-    user-select: none;
+	color: white;
+	top: 0;
+	left: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.4rem;
+	user-select: none;
 }
 .setting {
-    background: #0008;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+	background: #0008;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
 }
 #present {
-    cursor: pointer;
+	cursor: pointer;
 }
 .card {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    background: #fff8;
-    font-size: 3rem;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	background: #fff8;
+	font-size: 3rem;
 }
 .card.off {
-    display: none;
+	display: none;
 }
 body.present .card.hidden {
-    opacity: 0;
+	opacity: 0;
 }
 body.present .card {
-    cursor: pointer;
+	cursor: pointer;
 }
 body.present .card > * {
-    pointer-events: none;
+	pointer-events: none;
 }
 body.present .card > .color {
-    opacity: 0;
+	opacity: 0;
 }
 .card > textarea {
-    all: unset;
-    flex-grow: 1;
-    display: flex;
-    text-align: center;
-    align-content: center;
-    color: inherit;
+	all: unset;
+	flex-grow: 1;
+	display: flex;
+	text-align: center;
+	align-content: center;
+	color: inherit;
 }
 .card > textarea::placeholder {
-    color: inherit;
-    opacity: 0.5;
+	color: inherit;
+	opacity: 0.5;
 }
 .card > .color {
-    display: flex;
+	display: flex;
 }
 .card > .color > input {
-    flex-grow: 1;
-    flex-shrink: 1;
-    background: transparent;
-    border: 0;
-    cursor: cell;
+	flex-grow: 1;
+	flex-shrink: 1;
+	background: transparent;
+	border: 0;
+	cursor: cell;
 }
 	</style>
 </head>
@@ -137,6 +137,8 @@ body.present .card > .color {
 		</section>
 	</template>
 	<script>
+'use strict'
+const version = '0.1'
 const $ = document.getElementById.bind(document)
 const max_size = 8
 const $image_input = $('image-input')
@@ -145,58 +147,65 @@ const $count_output = $('count-output')
 const $present_input = $('present-input')
 const $main = $('main')
 const $template_card = $('template-card')
-const state_json = localStorage.getItem('polypops-state')
+const state_json = localStorage.getItem(version)
 const state = state_json ? JSON.parse(state_json) : {
 	side: 4,
 	image: 'https://w.wiki/3Z9A',
-	cards: new Array(max_size*max_size).fill({
+	cards: new Array(max_size * max_size).fill(0).map(() => ({
 		text: '',
 		background: '#ffffff',
 		color: '#000000'
-	})
+	}))
 }
 let cards
 
-async function main(){
+async function main() {
 	cards = state.cards.map(make_card)
 	$main.append(...cards)
-	$count_input.addEventListener('input',update_count)
+	$count_input.addEventListener('input', update_count)
 	$count_input.value = state.side
-	$image_input.addEventListener('input',update_image)
+	$image_input.addEventListener('input', update_image)
 	$image_input.value = state.image
-	$present_input.addEventListener('input',toggle_present)
-	$main.addEventListener('click',card_click)
-	$main.addEventListener('input',card_input)
+	$present_input.addEventListener('input', toggle_present)
+	$main.addEventListener('click', card_click)
+	$main.addEventListener('input', card_input)
 	update_count()
 }
-async function update_count(){
+async function update_count() {
 	const side = state.side = $count_input.valueAsNumber
 	const count = side * side
 	$count_output.textContent = count
 	$main.childNodes.forEach(
-		( $card, index ) => $card.classList.toggle( 'off', index>=count )
+		($card, index) => $card.classList.toggle('off', index >= count)
 	)
 	$main.style.gridTemplateColumns = $main.style.gridTemplateRows =
-	`repeat(${side},1fr)`
+		`repeat(${side},1fr)`
 	update_state()
 }
-async function update_image(){
+async function update_image() {
 	$main.style.backgroundImage = `url(${$image_input.value})`
 	state.image = $image_input.value
 }
-async function toggle_present(){
-	document.body.classList.toggle('present',$present_input.checked)
+async function toggle_present() {
+	document.body.classList.toggle('present', $present_input.checked)
 }
-async function card_click({target}){
-	if(document.body.classList.contains('present'))
+async function card_click({
+	target
+}) {
+	if (document.body.classList.contains('present'))
 		target.classList.toggle('hidden')
 }
-async function card_input({target}){
+async function card_input({
+	target
+}) {
 	let card = target.parentElement
-	if(!card.id) card = card.parentElement
-	const { id, style } = card
+	if (!card.id) card = card.parentElement
+	const {
+		id,
+		style
+	} = card
 	const key = target.dataset.for
-	switch(key){
+	switch (key) {
 		case 'text':
 			state.cards[id][key] = target.value
 			break
@@ -211,19 +220,24 @@ async function card_input({target}){
 	}
 	update_state()
 }
-async function update_state(){
-	localStorage.setItem('polypops-state',JSON.stringify(state))
+async function update_state() {
+	localStorage.setItem(version, JSON.stringify(state))
 }
-function make_card({text, color, background}, index){
+
+function make_card({
+	text,
+	color,
+	background
+}, index) {
 	const $card = $template_card.content.cloneNode(true).firstElementChild
 
 	$card.firstElementChild.value = text
 	$card.lastElementChild.firstElementChild.value = color
 	$card.style.color = color
 
-	$card.lastElementChild.lastElementChild.value = background	
+	$card.lastElementChild.lastElementChild.value = background
 	$card.style.background = background + '88'
-	
+
 	$card.id = index
 	return $card
 }
