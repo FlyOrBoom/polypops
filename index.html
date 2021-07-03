@@ -184,7 +184,7 @@ async function update_count() {
 	update_state()
 }
 async function update_image() {
-	$main.style.backgroundImage = `url(${$image_input.value})`
+	document.body.style.backgroundImage = `url(${$image_input.value})`
 	state.image = $image_input.value
 }
 async function toggle_present() {
